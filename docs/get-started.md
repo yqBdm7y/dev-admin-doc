@@ -2,9 +2,17 @@
 
 ## 快速上手
 
+dev-admin-doc
+
 ```bash
 pnpm install # 安装依赖
 pnpm run dev # 运行
+```
+
+dev-admin
+
+```bash
+go run main.go
 ```
 
 ## Content
