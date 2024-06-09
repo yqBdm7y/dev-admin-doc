@@ -6,6 +6,8 @@ on:
     branches:
       # make sure this is the branch you are using
       - master
+  # 手动触发部署
+  workflow_dispatch:
 
 permissions:
   contents: write
