@@ -15,7 +15,36 @@ dev-admin
 go run main.go
 ```
 
-## Content
+## 方法
+
+### 响应
+
+dev-admin调用了devtool中的API库，并使其简化。
+
+你的项目可以调用dev-admin的方法，从而使项目更加简洁。
+
+#### 返回错误
+
+示例：
+
+```go
+func (p Platform) Create(c *gin.Context) {
+	result := d.Database[d.LibraryGorm]{}.Get().DB.Create(&form)
+	if result.Error != nil {
+		d.Gin{}.Error(c, dadmin.Err(result.Error))
+		return
+	}
+}
+```
+
+我们使用 `d.Gin{}.Error(c, dadmin.Err(err))`这样的方式返回错误
+
+#### 返回成功
+
+```go
+d.Gin{}.Success(c, dadmin.Success(form.ID))
+```
+
 
 Every markdown file [will be rendered to HTML, then converted to a Vue SFC][content].
 
