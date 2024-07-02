@@ -2,7 +2,7 @@
 
 ## 快速上手
 
-dev-admin-doc
+dev-admin-web
 
 ```bash
 pnpm install # 安装依赖
@@ -45,38 +45,100 @@ func (p Platform) Create(c *gin.Context) {
 d.Gin{}.Success(c, dadmin.Success(form.ID))
 ```
 
+### 登录
 
-Every markdown file [will be rendered to HTML, then converted to a Vue SFC][content].
+#### 调用
 
-VuePress support basic markdown syntax and [some extensions][synatex-extensions], you can also [use Vue features][vue-feature] in it.
+调用可以使用自定义的参数，也可以使用内置的默认参数。
 
-## Configuration
+不带参数的调用，使用默认参数
 
-VuePress use a `.vuepress/config.js`(or .ts) file as [site configuration][config], you can use it to config your site.
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew())
+```
 
-For [client side configuration][client-config], you can create `.vuepress/client.js`(or .ts).
+带参数的调用，以下只是一个示例，具体根据你的业务逻辑来设置参数
 
-Meanwhile, you can also add configuration per page with [frontmatter][frontmatter].
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithTimeout(time.Second*5),
+		dadmin.LoginWithMaxRefresh(time.Second*10),
+		dadmin.LoginWithCustomFieldAccessToken("accessToken"),
+		dadmin.LoginWithCustomFieldRefreshToken("refreshToken"),
+		dadmin.LoginWithCustomFieldExpire("expires"),
+	))
+```
 
-## Layouts and customization
+#### 可选参数
 
-Here are common configuration controlling layout of `@vuepress/theme-default`:
+##### 加密盐
 
-- [navbar][navbar]
-- [sidebar][sidebar]
+默认为随机生成的加密盐。
 
-Check [default theme docs][default-theme] for full reference.
+你可以设置自定义的加密盐，只需要在调用的时候附带 `dadmin.LoginWithKey("YOUR_KEY")` 作为参数，其中的YOUR_KEY替换为你需要自定义的加密盐。
 
-You can [add extra style][style] with `.vuepress/styles/index.scss` file.
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithKey("YOUR_KEY"),
+	))
+```
 
-[routing]: https://vuejs.press/guide/page.html#routing
-[content]: https://vuejs.press/guide/page.html#content
-[synatex-extensions]: https://vuejs.press/guide/markdown.html#syntax-extensions
-[vue-feature]: https://vuejs.press/guide/markdown.html#using-vue-in-markdown
-[config]: https://vuejs.press/guide/configuration.html#client-config-file
-[client-config]: https://vuejs.press/guide/configuration.html#client-config-file
-[frontmatter]: https://vuejs.press/guide/page.html#frontmatter
-[navbar]: https://vuejs.press/reference/default-theme/config.html#navbar
-[sidebar]: https://vuejs.press/reference/default-theme/config.html#sidebar
-[default-theme]: https://vuejs.press/reference/default-theme/
-[style]: https://vuejs.press/reference/default-theme/styles.html#style-file
+##### 访问令牌过期时间
+
+默认为2个小时。
+
+你可以设置自定义的过期时间，只需要在调用的时候附带 `dadmin.LoginWithTimeout(time.Second*5)` 作为参数，其中的 `time.Second*5` 替换为你需要自定义的过期时间。
+
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithTimeout(time.Second*5),
+	))
+```
+
+##### 刷新令牌过期时间
+
+默认为24个小时（一天）。
+
+你可以设置自定义的过期时间，只需要在调用的时候附带 `dadmin.LoginWithMaxRefresh(time.Second*10)` 作为参数，其中的 `time.Second*10` 替换为你需要自定义的过期时间。
+
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithMaxRefresh(time.Second*10),
+	))
+```
+
+##### 自定义访问令牌的字段名
+
+默认为 `token`。
+
+你可以设置自定义的字段名，只需要在调用的时候附带 `dadmin.LoginWithCustomFieldAccessToken("accessToken")` 作为参数，其中的 `accessToken` 替换为你需要自定义的字段名。
+
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithCustomFieldAccessToken("accessToken"),
+	))
+```
+
+##### 自定义刷新令牌的字段名
+
+默认为 `refresh_token`。
+
+你可以设置自定义的字段名，只需要在调用的时候附带 `dadmin.LoginWithCustomFieldRefreshToken("refreshToken")` 作为参数，其中的 `refreshToken` 替换为你需要自定义的字段名。
+
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithCustomFieldRefreshToken("refreshToken"),
+	))
+```
+
+##### 自定义令牌过期时间的字段名
+
+默认为 `expire`。
+
+你可以设置自定义的字段名，只需要在调用的时候附带 `dadmin.LoginWithCustomFieldExpire("expires")` 作为参数，其中的 `expires` 替换为你需要自定义的字段名。
+
+```go
+authMiddleware, err := jwt.New(dadmin.LoginNew(
+		dadmin.LoginWithCustomFieldExpire("expires"),
+	))
+```
